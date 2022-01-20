@@ -1,0 +1,33 @@
+Use Accounts;
+ 
+INSERT
+db.Accounts.insert({custID:"C123",bal:500,type:"S"})
+db.Accounts.insert({custID:"C123",bal:900,type:"S"})
+db.Accounts.insert({custID:"C124",bal:1200,type:"S"})
+db.Accounts.insert({custID:"C123",bal:1200,type:"S"})
+db.Accounts.insert({custID:"C124",bal:1200,type:"S"})
+db.Accounts.insert({custID:"C111",bal:1200,type:"S"});
+db.Accounts.insert({custID:"C123",bal:1500,type:"C"});
+db.Accounts.insert({custID:"C111",bal:900,type:"C"});
+
+ 
+AGGREGATE
+db.Accounts.aggregate({$match:{type:"S"}},{$group:{_id:"$custID",totbal:{$sum:"$bal"}}},{$match:{totbal:{$gt:1200}}});
+db.Accounts.aggregate({$match:{type:"S"}},{$group:{_id:"$custID",totbal:{$sum:"$bal"}}});
+db.Accounts.aggregate([{$group:{_id:null,"TotalAmount":{$sum:"$bal"}}}]);
+    
+MAP-REDUCE
+db.Accounts.mapReduce(function(){emit(this.custID,this.bal);},function(key,values){return Array.sum(values)},{query: {type: "S"},out: "Customer_Totals"});
+ 
+IMPORT - EXPORT
+mongoexport -–db college -–collection Accounts -–type=csv -–fields custID,bal,type -–out C:\Users\user\Desktop\MCA3SEM\BDA\Output.csv
+
+mongoexport –-db college -–collection Accounts -–type=csv -–fields custID,bal,type -–out C:\Users\user\Desktop\students.csv
+
+
+
+mongoimport --db bankDB --collection Account --type
+CSV --headerline --file Account.csv
+ 
+mongoimport --db resultDB --type CSV
+--headerline --file marks.csv
